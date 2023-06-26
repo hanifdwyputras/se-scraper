@@ -1,0 +1,24 @@
+{
+    "name": "hansputera/se-crawler",
+    "description": "Search Engine Scraper/Crawler",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hansputera\\SeCrawler\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "hansputera",
+            "email": "hanifdwyputrasembiring@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.0",
+        "scotteh/php-dom-wrapper": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10"
+    }
+}
