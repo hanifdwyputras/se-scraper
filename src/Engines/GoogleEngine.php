@@ -51,7 +51,7 @@ class GoogleEngine extends AbstractEngine
 
         $data = [];
 
-        $nodes->map(function(DOMNode $node) use (&$data) {
+        $nodes->each(function(DOMNode $node) use (&$data) {
             $dom = new DOMDocument();
             $dom->appendChild($dom->importNode($node, true));
 
@@ -72,7 +72,7 @@ class GoogleEngine extends AbstractEngine
             array_push($data, new SingleImageItemInterface([
                 'title' => $dom->getElementsByTagName('h3')->item(0)->textContent,
                 'image' => $images->item(0)->attributes->item(0)->nodeValue,
-                'size'  => sprintf("%spx %spx", $currentAttr->getNamedItem('data-ow')->nodeValue, $currentAttr->getNamedItem('data-oh')->nodeValue),
+                'size'  => sprintf("%spx x %spx", $currentAttr->getNamedItem('data-ow')->nodeValue, $currentAttr->getNamedItem('data-oh')->nodeValue),
                 'small' => $images->item(1)->attributes->item(0)->nodeValue,
                 'copy'  => $copy,
             ]));

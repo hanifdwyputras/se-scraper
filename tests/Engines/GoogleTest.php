@@ -11,7 +11,7 @@ final class GoogleTest extends TestCase
         $google = new GoogleEngine();
 
         $data = $google->search_image('sman 3 palu');
-        print_r($data);
+        // print_r($data);
 
         $this->assertIsArray($data);
     }

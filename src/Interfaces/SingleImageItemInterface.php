@@ -15,5 +15,6 @@ class SingleImageItemInterface
         $this->small = $data['small'];
         $this->size  = $data['size'];
         $this->image = $data['image'];
-        $this->copy  = $data['copy'];    }
+        $this->copy  = $data['copy'];
+    }
 }
