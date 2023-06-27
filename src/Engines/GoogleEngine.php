@@ -70,7 +70,7 @@ class GoogleEngine extends AbstractEngine
             }
 
             array_push($data, new SingleImageItemInterface([
-                'title' => $dom->getElementsByTagName('h3')->item(0)->textContent,
+                'title' => $node->firstChild->textContent,
                 'image' => $images->item(0)->attributes->item(0)->nodeValue,
                 'size'  => sprintf("%spx x %spx", $currentAttr->getNamedItem('data-ow')->nodeValue, $currentAttr->getNamedItem('data-oh')->nodeValue),
                 'small' => $images->item(1)->attributes->item(0)->nodeValue,
