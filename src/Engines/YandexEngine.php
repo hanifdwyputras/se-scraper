@@ -34,7 +34,7 @@ class YandexEngine extends AbstractEngine
         $dom    = new Document();
         $dom->html($html);
 
-        $nodes  = $dom->find('[data-bem]');
+        $nodes  = $dom->find('div.serp-item');
         if ($nodes->count() < 1)
         {
             return [];
@@ -44,6 +44,8 @@ class YandexEngine extends AbstractEngine
         $nodes->each(function(DOMNode $node) use (&$data) {
             $json = $node->attributes->getNamedItem('data-bem')->nodeValue;
             $json = json_decode($json, true);
+
+            // file_put_contents('/tmp/yandex_node.json', json_encode($json, JSON_PRETTY_PRINT));
 
             array_push($data, new SingleImageItemInterface([
                 'title' =>  $json['serp-item']['snippet']['title'],
