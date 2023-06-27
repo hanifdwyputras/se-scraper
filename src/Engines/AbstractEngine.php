@@ -5,9 +5,11 @@ abstract class AbstractEngine
 {
     public \GuzzleHttp\Client $client;
     public array $headers;
+    public string $baseUrl;
 
     public function __construct(string $baseUrl)
     {
+        $this->baseUrl = $baseUrl;
         $this->client = new \GuzzleHttp\Client([
             'base_uri'      =>  $baseUrl,
             'timeout'       =>  3,
@@ -19,12 +21,12 @@ abstract class AbstractEngine
         ];
     }
 
-    public function generateHeaders(array $options = []): array
+    protected function generateHeaders(array $options = []): array
     {
         return array_merge($this->headers, $options);
     }
 
-    abstract public function build_query(string $query, array $options = []): array;
     abstract public function search_image(string $query);
+    abstract protected function build_query(string $query, array $options = []): array;
     abstract protected function dom_parser(string $html): mixed;
 }

@@ -58,19 +58,30 @@ class GoogleEngine extends AbstractEngine
             $currentAttr = $dom->firstChild->attributes;
             $images = $dom->getElementsByTagName('img');
 
+            $copy = $dom->getElementsByTagName('a')->item(0)->attributes->getNamedItem('href')->nodeValue;
+            if ($copy)
+            {
+                $outs = [];
+                preg_match_all('/\/imgres\?imgurl=(.+)\&tbnid/', $copy, $outs);
+
+                $copy = $outs[1];
+            } else {
+                $copy = parse_url($dom->getElementsByTagName('a')->item(1)->attributes->getNamedItem('href')->nodeValue, PHP_URL_HOST);
+            }
+
             array_push($data, new SingleImageItemInterface([
                 'title' => $dom->getElementsByTagName('h3')->item(0)->textContent,
                 'image' => $images->item(0)->attributes->item(0)->nodeValue,
                 'size'  => sprintf("%spx %spx", $currentAttr->getNamedItem('data-ow')->nodeValue, $currentAttr->getNamedItem('data-oh')->nodeValue),
                 'small' => $images->item(1)->attributes->item(0)->nodeValue,
-                'copy'  => ''
+                'copy'  => $copy,
             ]));
         });
 
         return $data;
     }
 
-    public function build_query(string $query, array $options = []): array
+    protected function build_query(string $query, array $options = []): array
     {
         return array_merge([
             'q' => urlencode($query),
