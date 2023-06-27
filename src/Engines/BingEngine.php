@@ -46,7 +46,7 @@ class BingEngine extends AbstractEngine
             $json   =   json_decode($json, true);
 
 
-            $nums   =   [];
+            $nums   =   [0, 0];
             $lastElement    =   $node->lastChild->firstChild->textContent;
             preg_match('/([0-9]+)/', $lastElement, $nums);
 
