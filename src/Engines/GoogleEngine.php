@@ -13,7 +13,7 @@ class GoogleEngine extends AbstractEngine
         parent::__construct('https://google.com');
     }
 
-    public function search_image(string $query)
+    public function search_image(string $query, bool $asArray = false)
     {
         // preparation
         $headers = $this->generateHeaders();
@@ -33,12 +33,12 @@ class GoogleEngine extends AbstractEngine
         }
 
         // parsing
-        $data = $this->dom_parser($response->getBody()->getContents());
+        $data = $this->dom_parser($response->getBody()->getContents(), $asArray);
 
         return $data;
     }
 
-    protected function dom_parser(string $html): mixed
+    protected function dom_parser(string $html, bool $asArray = false): mixed
     {
         $dom = new Document();
         $dom->html($html);
@@ -51,7 +51,7 @@ class GoogleEngine extends AbstractEngine
 
         $data = [];
 
-        $nodes->each(function(DOMNode $node) use (&$data) {
+        $nodes->each(function(DOMNode $node) use (&$data, $asArray) {
             $dom = new DOMDocument();
             $dom->appendChild($dom->importNode($node, true));
 
@@ -69,13 +69,15 @@ class GoogleEngine extends AbstractEngine
                 $copy = parse_url($dom->getElementsByTagName('a')->item(1)->attributes->getNamedItem('href')->nodeValue, PHP_URL_HOST);
             }
 
-            array_push($data, new SingleImageItemInterface([
+            $item = [
                 'title' => $node->firstChild->textContent,
                 'image' => $images->item(0)->attributes->item(0)->nodeValue,
                 'size'  => sprintf("%spx x %spx", $currentAttr->getNamedItem('data-ow')->nodeValue, $currentAttr->getNamedItem('data-oh')->nodeValue),
                 'small' => $images->item(1)->attributes->item(0)->nodeValue,
                 'copy'  => $copy,
-            ]));
+            ];
+
+            array_push($data, $asArray ? $item : new SingleImageItemInterface($item));
         });
 
         return $data;

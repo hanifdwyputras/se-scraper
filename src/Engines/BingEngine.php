@@ -12,7 +12,7 @@ class BingEngine extends AbstractEngine
         parent::__construct('https://www.bing.com');
     }
 
-    public function search_image(string $query)
+    public function search_image(string $query, bool $asArray = false)
     {
         $headers    =   $this->generateHeaders();
         $queries    =   $this->build_query($query);
@@ -26,10 +26,10 @@ class BingEngine extends AbstractEngine
             return [];
         }
 
-        return $this->dom_parser($response->getBody()->getContents());
+        return $this->dom_parser($response->getBody()->getContents(), $asArray);
     }
 
-    protected function dom_parser(string $html): mixed
+    protected function dom_parser(string $html, bool $asArray = false): mixed
     {
         $dom =  new Document();
         $dom->html($html);
@@ -41,7 +41,7 @@ class BingEngine extends AbstractEngine
         }
 
         $data   =   [];
-        $nodes->each(function(DOMNode $node) use (&$data) {
+        $nodes->each(function(DOMNode $node) use (&$data, $asArray) {
             $json   =   $node->firstChild->attributes->getNamedItem('m')->nodeValue;
             $json   =   json_decode($json, true);
 
@@ -50,13 +50,15 @@ class BingEngine extends AbstractEngine
             $lastElement    =   $node->lastChild->firstChild->textContent;
             preg_match('/([0-9]+)/', $lastElement, $nums);
 
-            array_push($data, new SingleImageItemInterface([
+            $item = [
                 'title'     =>  $json['t'],
                 'small'     =>  $json['turl'],
                 'image'     =>  $json['murl'],
                 'copy'      =>  parse_url($json['purl'], PHP_URL_HOST),
                 'size'      =>  sprintf("%dpx x %dpx", $nums[0], $nums[1]),
-            ]));
+            ];
+
+            array_push($data, $asArray ? $item : new SingleImageItemInterface($item));
         });
 
         return $data;

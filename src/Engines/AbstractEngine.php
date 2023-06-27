@@ -26,7 +26,7 @@ abstract class AbstractEngine
         return array_merge($this->headers, $options);
     }
 
-    abstract public function search_image(string $query);
+    abstract public function search_image(string $query, bool $asArray = false);
     abstract protected function build_query(string $query, array $options = []): array;
-    abstract protected function dom_parser(string $html): mixed;
+    abstract protected function dom_parser(string $html, bool $asArray = false): mixed;
 }

@@ -12,7 +12,7 @@ class YahooEngine extends AbstractEngine
         parent::__construct('https://search.yahoo.com');
     }
 
-    public function search_image(string $query)
+    public function search_image(string $query, bool $asArray = false)
     {
         $headers    =   $this->generateHeaders();
         $queries    =   $this->build_query($query);
@@ -32,10 +32,10 @@ class YahooEngine extends AbstractEngine
             return [];
         }
 
-        return $this->dom_parser($response->getBody()->getContents());
+        return $this->dom_parser($response->getBody()->getContents(), $asArray);
     }
 
-    protected function dom_parser(string $html): mixed
+    protected function dom_parser(string $html, bool $asArray = false): mixed
     {
         $json   =   json_decode($html, true);
         $dom    =   new Document();
@@ -48,7 +48,7 @@ class YahooEngine extends AbstractEngine
         }
 
         $data   =   [];
-        $nodes->each(function(DOMNode $node) use (&$data) {
+        $nodes->each(function(DOMNode $node) use (&$data, $asArray) {
             $json   = $node->attributes->item(1)->nodeValue;
             $json   = json_decode($json, true);
 
@@ -56,7 +56,7 @@ class YahooEngine extends AbstractEngine
                 return;
             }
 
-            array_push($data, new SingleImageItemInterface([
+            $item = [
                 'title' =>  $json['alt'],
                 'image' =>  $json['iurl'],
                 'small' =>  $json['ith'],
@@ -66,7 +66,9 @@ class YahooEngine extends AbstractEngine
                     $json['h'],
                 ),
                 'copy'  =>  $json['a'],
-            ]));
+            ];
+
+            array_push($data, $asArray ? $item : new SingleImageItemInterface($item));
         });
 
         return $data;
